@@ -1,7 +1,7 @@
 # import ollama
 import os
 from langchain_openai import ChatOpenAI
-from config import API_KEY
+from core.config import API_KEY
 # 聊天模式
 # response = ollama.chat(model="qwen2.5:7b", messages=[{"role": "user", "content": "你好"}])
 # print(response)
