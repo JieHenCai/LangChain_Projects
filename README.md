@@ -15,26 +15,26 @@
 ### 项目目录结构
 
 ```text
-python_LangChain/
-├── .env
-├── .env.example
+python_LangChain/                  ← 项目根（CWD 应停在这里）
+├── .env                           ← 敏感配置（API Key 等），不进 git
+├── .env.example                   ← .env 模板，进 git
 ├── .gitignore
-├── config.yaml
+├── config.yaml                    ← 非敏感业务配置（提示词、模型名、参数）
 ├── README.md
-├── core/
-│   ├── config.py
-│   └── paths.py
-├── P01_rag_qa/
-│   ├── chroma_db/
-│   ├── app.py
+├── core/                          ← 共享基础设施（全项目复用）
+│   ├── config.py                  ← 唯一配置加载点
+│   └── paths.py                   ← 统一路径常量
+├── P01_rag_qa/                    ← 子项目 1：RAG 知识库问答
+│   ├── chroma_db/                 ← 向量库持久化目录
+│   ├── app.py                     ← 子项目入口（Streamlit）
 │   ├── README.md
 │   ├── requirements.txt
-│   └── temp_knowledge.txt
-├── study/
-│   └── config.py
-└── tests/
+│   └── temp_knowledge.txt         ← 知识文本（现在代码里已不必须）
+├── study/                         ← 学习/试验用
+│   └── study_config.py            
+└── tests/                         ← 测试目录
     ├── main.py
-    └── Ollama_user.py
+    └── Ollama_user.py             ← Ollama 使用试验
 ```
 
 ## **P01-rag-qa**

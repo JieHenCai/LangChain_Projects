@@ -3,3 +3,6 @@ __pycache__/
 *.pyc
 .idea/
 .vscode/
+# 向量库（运行时产物）
+chroma_db/
+**/chroma_db/
