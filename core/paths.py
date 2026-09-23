@@ -5,4 +5,4 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
 ENV_FILE = PROJECT_ROOT / ".env"
-CONFIG_YAML = PROJECT_ROOT / "config.yaml"   # 如果你想让 study_config.py 从这里引
+CONFIG_YAML = PROJECT_ROOT / "config.yaml"

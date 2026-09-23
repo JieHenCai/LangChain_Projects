@@ -2,19 +2,16 @@
 import os
 from pathlib import Path
 from typing import Any
+
 from langchain_ollama import ChatOllama
 from langchain_openai import ChatOpenAI
-
 import yaml
 from dotenv import load_dotenv
 
-from core.paths import PROJECT_ROOT, ENV_FILE
+from core.paths import PROJECT_ROOT, ENV_FILE, CONFIG_YAML
 
 # ---------- 1. 加载 .env ----------
 load_dotenv(ENV_FILE)
-
-# ---------- 2. 加载 config.yaml ----------
-CONFIG_YAML = PROJECT_ROOT / "config.yaml"
 
 
 def _load_yaml(path: Path) -> dict[str, Any]:
@@ -36,27 +33,31 @@ BOT_SETTINGS: dict[str, Any] = _yaml.get("bot_settings", {})
 
 BOT_ROLE: str = BOT_SETTINGS.get("role", "")
 BOT_BEHAVIOR_RULES: str = BOT_SETTINGS.get("behavior_rules", "")
-MODEL_NAME: str = BOT_SETTINGS.get("model_name", "qwen2.5:7b")
 MAX_HISTORY: int = int(BOT_SETTINGS.get("max_history", 30))
 
+
 # ---------- 5. 启动校验 ----------
-_required_env = {
-    "DEEPSEEK_API_KEY": DEEPSEEK_API_KEY,
-}
-_missing = [k for k, v in _required_env.items() if not v]
-if _missing:
-    raise ValueError(f"缺少必需的环境变量：{', '.join(_missing)}，请检查 .env 文件")
+def _validate_provider():
+    if LLM_PROVIDER == "deepseek" and not DEEPSEEK_API_KEY:
+        raise ValueError(
+            "llm_provider=deepseek 但缺少 DEEPSEEK_API_KEY 配置, 请检查 .env 文件"
+        )
+
+
 # 从 config.yaml 读取（你已有 BOT_SETTINGS 字典）
 LLM_PROVIDER = BOT_SETTINGS.get("llm_provider", "ollama")
 OLLAMA_MODEL = BOT_SETTINGS.get("model_name", "qwen2.5:7b")
 DEEPSEEK_MODEL = BOT_SETTINGS.get("deepseek_model", "deepseek-flash")
+
+
 def get_llm():
     """根据配置返回对应的 LLM 实例"""
+    _validate_provider()
     if LLM_PROVIDER == "deepseek":
         return ChatOpenAI(
             model=DEEPSEEK_MODEL,
             temperature=0,
-            api_key=DEEPSEEK_API_KEY,          # 新版参数名是 api_key
+            api_key=DEEPSEEK_API_KEY,  # 新版参数名是 api_key
             base_url="https://api.deepseek.com",  # 官方 base_url 不带 /v1 也可以[citation:3]
         )
     else:
@@ -64,5 +65,5 @@ def get_llm():
         return ChatOllama(
             model=OLLAMA_MODEL,
             temperature=0,
-            base_url="http://localhost:11434",   # Ollama 默认地址
+            base_url="http://localhost:11434",  # Ollama 默认地址
         )
